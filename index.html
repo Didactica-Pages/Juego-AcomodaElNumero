@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafío de Lógica y Comparación</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: #f1f5f9;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .wrapper {
+      width: 100%;
+      max-width: 950px;
+    }
+    .card-screen {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      border: 1px solid #e2e8f0;
+    }
+    .card-screen h3 {
+      margin-top: 0;
+      color: #1e293b;
+      font-size: 1.5rem;
+    }
+    .password-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .password-group input {
+      padding: 12px 16px;
+      font-size: 1rem;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      outline: none;
+      flex: 1;
+    }
+    .password-group input:focus {
+      border-color: #3b82f6;
+    }
+    .btn-primary {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .btn-primary:hover {
+      background-color: #2563eb;
+    }
+    .error-text {
+      color: #ef4444;
+      margin-top: 10px;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    /* Secuencia en una sola línea */
+    .equation-container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      margin: 20px 0;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    
+    .drop-zone {
+      width: 52px;
+      height: 44px;
+      border: 2px dashed #94a3b8;
+      border-radius: 8px;
+      background-color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .drop-zone.drag-over {
+      border-color: #3b82f6;
+      background-color: #eff6ff;
+    }
+
+    .draggable-num {
+      width: 44px;
+      height: 38px;
+      background-color: #3b82f6;
+      color: white;
+      font-weight: bold;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.15s, outline 0.15s;
+      flex-shrink: 0;
+    }
+    .draggable-num.selected {
+      outline: 3px solid #f59e0b;
+      transform: scale(1.1);
+    }
+
+    .symbol {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #475569;
+      flex-shrink: 0;
+    }
+    .fixed-num {
+      background-color: #f1f5f9;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-weight: bold;
+      color: #0f172a;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .symbol-select {
+      height: 42px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: 2px solid #0284c7;
+      border-radius: 8px;
+      background-color: #f0f9ff;
+      color: #0369a1;
+      padding: 0 6px;
+      cursor: pointer;
+      outline: none;
+      flex-shrink: 0;
+    }
+
+    /* Banco de números */
+    .bank-section {
+      margin-top: 15px;
+      background-color: #f1f5f9;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .bank-title {
+      margin: 0 0 12px 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #334155;
+    }
+    .number-bank {
+      display: flex;
+      gap: 12px;
+      min-height: 50px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* Botones y mensajes */
+    .controls {
+      text-align: center;
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+    .btn-check {
+      background-color: #22c55e;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .btn-check:hover {
+      background-color: #16a34a;
+    }
+    .btn-reset {
+      background-color: #64748b;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .btn-reset:hover {
+      background-color: #475569;
+    }
+    .feedback-msg {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: none;
+    }
+    .feedback-msg.correct {
+      display: block;
+      background-color: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    .feedback-msg.incorrect {
+      display: block;
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <!-- PANTALLA 1: CONTRASEÑA -->
+  <div id="login-screen" class="card-screen">
+    <h3>Acceso a la Actividad</h3>
+    <p>Ingresa la contraseña para comenzar:</p>
+    <div class="password-group">
+      <input type="password" id="pass-input" placeholder="Contraseña..." onkeypress="handleKeyPress(event)">
+      <button type="button" onclick="validarPassword()" class="btn-primary">Ingresar</button>
+    </div>
+    <div id="pass-error" class="error-text"></div>
+  </div>
+
+  <!-- PANTALLA 2: EJERCICIO -->
+  <div id="exercise-screen" class="card-screen" style="display: none;">
+    <h3>Desafío de Lógica y Comparación</h3>
+    <p>Arrastra los números a las casillas o haz clic en un número y luego en la casilla destino:</p>
+
+    <div class="equation-container">
+      <div class="drop-zone" data-slot="n1" onclick="slotClick(this)"></div>
+      <span class="symbol">&lt;</span>
+      
+      <div class="drop-zone" data-slot="n2" onclick="slotClick(this)"></div>
+      <span class="symbol">&lt;</span>
+      
+      <div class="drop-zone" data-slot="n3" onclick="slotClick(this)"></div>
+      <span class="symbol">&lt;</span>
+      
+      <div class="drop-zone" data-slot="n4" onclick="slotClick(this)"></div>
+      <span class="symbol">&gt;</span>
+      
+      <span class="fixed-num">32</span>
+      
+      <select id="s1" class="symbol-select">
+        <option value="">?</option>
+        <option value="<">&lt;</option>
+        <option value=">">&gt;</option>
+        <option value="=">=</option>
+      </select>
+      
+      <span class="fixed-num">24</span>
+      
+      <select id="s2" class="symbol-select">
+        <option value="">?</option>
+        <option value="<">&lt;</option>
+        <option value=">">&gt;</option>
+        <option value="=">=</option>
+      </select>
+      
+      <span class="fixed-num">60</span>
+      <span class="symbol">&lt;</span>
+      
+      <div class="drop-zone" data-slot="n5" onclick="slotClick(this)"></div>
+      
+      <select id="s3" class="symbol-select">
+        <option value="">?</option>
+        <option value="<">&lt;</option>
+        <option value=">">&gt;</option>
+        <option value="=">=</option>
+      </select>
+      
+      <span class="fixed-num">10</span>
+      <span class="symbol">&gt;</span>
+      
+      <div class="drop-zone" data-slot="n6" onclick="slotClick(this)"></div>
+    </div>
+
+    <!-- BANCO DE NÚMEROS -->
+    <div class="bank-section">
+      <p class="bank-title">Fichas disponibles:</p>
+      <div class="number-bank" id="number-bank" onclick="bankClick(event)">
+        <div class="draggable-num" draggable="true" id="num-24" onclick="selectNumClick(this, event)">24</div>
+        <div class="draggable-num" draggable="true" id="num-5" onclick="selectNumClick(this, event)">5</div>
+        <div class="draggable-num" draggable="true" id="num-42" onclick="selectNumClick(this, event)">42</div>
+        <div class="draggable-num" draggable="true" id="num-61" onclick="selectNumClick(this, event)">61</div>
+        <div class="draggable-num" draggable="true" id="num-13" onclick="selectNumClick(this, event)">13</div>
+        <div class="draggable-num" draggable="true" id="num-30" onclick="selectNumClick(this, event)">30</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button type="button" onclick="evaluarRespuesta()" class="btn-check">Comprobar</button>
+      <button type="button" onclick="reiniciar()" class="btn-reset">Reiniciar</button>
+    </div>
+
+    <div id="mensaje" class="feedback-msg"></div>
+  </div>
+</div>
+
+<script>
+  let selectedElement = null;
+
+  function validarPassword() {
+    const inputPass = document.getElementById('pass-input').value.trim();
+    const errorBox = document.getElementById('pass-error');
+    
+    if (inputPass === "cierre") {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('exercise-screen').style.display = 'block';
+      setupEvents();
+    } else {
+      errorBox.textContent = "Contraseña incorrecta. Intenta de nuevo.";
+    }
+  }
+
+  function handleKeyPress(e) {
+    if (e.key === 'Enter') validarPassword();
+  }
+
+  function setupEvents() {
+    const numbers = document.querySelectorAll('.draggable-num');
+    const zones = document.querySelectorAll('.drop-zone');
+
+    numbers.forEach(num => {
+      num.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', num.id);
+        clearSelection();
+      });
+    });
+
+    zones.forEach(zone => {
+      zone.addEventListener('dragover', e => {
+        e.preventDefault();
+        zone.classList.add('drag-over');
+      });
+      zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        const id = e.dataTransfer.getData('text/plain');
+        const el = document.getElementById(id);
+        if (el) {
+          if (zone.children.length > 0) {
+            document.getElementById('number-bank').appendChild(zone.children[0]);
+          }
+          zone.appendChild(el);
+        }
+      });
+    });
+
+    const bank = document.getElementById('number-bank');
+    bank.addEventListener('dragover', e => e.preventDefault());
+    bank.addEventListener('drop', e => {
+      e.preventDefault();
+      const id = e.dataTransfer.getData('text/plain');
+      const el = document.getElementById(id);
+      if (el) bank.appendChild(el);
+    });
+  }
+
+  function selectNumClick(el, ev) {
+    ev.stopPropagation();
+    if (selectedElement === el) {
+      clearSelection();
+    } else {
+      clearSelection();
+      selectedElement = el;
+      el.classList.add('selected');
+    }
+  }
+
+  function slotClick(zone) {
+    if (selectedElement) {
+      if (zone.children.length > 0) {
+        document.getElementById('number-bank').appendChild(zone.children[0]);
+      }
+      zone.appendChild(selectedElement);
+      clearSelection();
+    } else if (zone.children.length > 0) {
+      document.getElementById('number-bank').appendChild(zone.children[0]);
+    }
+  }
+
+  function bankClick(ev) {
+    if (selectedElement && (ev.target.id === 'number-bank' || ev.target.classList.contains('bank-section'))) {
+      document.getElementById('number-bank').appendChild(selectedElement);
+      clearSelection();
+    }
+  }
+
+  function clearSelection() {
+    if (selectedElement) {
+      selectedElement.classList.remove('selected');
+      selectedElement = null;
+    }
+  }
+
+  // Validación exacta de la imagen: 13 < 24 < 30 < 42 > 32 > 24 < 60 < 61 > 10 > 5
+  function evaluarRespuesta() {
+    const getVal = (slotName) => {
+      const zone = document.querySelector(`.drop-zone[data-slot="${slotName}"]`);
+      if (zone && zone.children.length > 0) {
+        return zone.children[0].textContent.trim();
+      }
+      return null;
+    };
+
+    const n1 = getVal('n1');
+    const n2 = getVal('n2');
+    const n3 = getVal('n3');
+    const n4 = getVal('n4');
+    const n5 = getVal('n5');
+    const n6 = getVal('n6');
+
+    const s1 = document.getElementById('s1').value;
+    const s2 = document.getElementById('s2').value;
+    const s3 = document.getElementById('s3').value;
+
+    const msgBox = document.getElementById('mensaje');
+
+    const esCorrecto = (
+      n1 === "13" &&
+      n2 === "24" &&
+      n3 === "30" &&
+      n4 === "42" &&
+      s1 === ">" &&
+      s2 === "<" &&
+      n5 === "61" &&
+      s3 === ">" &&
+      n6 === "5"
+    );
+
+    if (esCorrecto) {
+      msgBox.textContent = "¡Correcto! Has resuelto el desafío perfectamente.";
+      msgBox.className = "feedback-msg correct";
+    } else {
+      msgBox.textContent = "revisa e intenta de nuevo";
+      msgBox.className = "feedback-msg incorrect";
+    }
+  }
+
+  function reiniciar() {
+    const bank = document.getElementById('number-bank');
+    const numbers = document.querySelectorAll('.draggable-num');
+    numbers.forEach(num => bank.appendChild(num));
+    
+    document.getElementById('s1').value = "";
+    document.getElementById('s2').value = "";
+    document.getElementById('s3').value = "";
+    
+    clearSelection();
+    const msgBox = document.getElementById('mensaje');
+    msgBox.style.display = "none";
+  }
+</script>
+
+</body>
+</html>
